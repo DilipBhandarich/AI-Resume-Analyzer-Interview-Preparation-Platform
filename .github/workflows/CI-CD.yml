@@ -22,19 +22,19 @@ jobs:
           cache: "npm"
 
       # Install frontend dependencies
-      - name: Install frontend dependencies
-        working-directory: frontend
+      - name: Install Frontend dependencies
+        working-directory: Frontend
         run: npm ci
 
-      - name: Build frontend
-        working-directory: frontend
+      - name: Build Frontend
+        working-directory: Frontend
         run: npm run build --if-present
 
       # Install backend dependencies
-      - name: Install backend dependencies
-        working-directory: backend
+      - name: Install Backend dependencies
+        working-directory: Backend
         run: npm ci
 
-      - name: Run backend tests
-        working-directory: backend
+      - name: Run Backend tests
+        working-directory: Backend
         run: npm test
