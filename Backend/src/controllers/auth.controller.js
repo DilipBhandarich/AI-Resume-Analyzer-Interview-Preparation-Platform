@@ -1,7 +1,8 @@
 const userModel = require("../models/user.model");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const tokenBlacklistModel = require("../models/blacklist.model");
+const { parseCredentials, parseRegistration } = require("../validation/auth.validation");
+const { createAccessToken, getAuthCookieOptions } = require("../config/security");
 /**
  * @name registerUserController
  * @description Register a new user,expects a request body with the following fields: name, email, password
@@ -9,13 +10,7 @@ const tokenBlacklistModel = require("../models/blacklist.model");
  */
 
 async function registerUserController(req, res) {
-  const { username, email, password } = req.body;
-
-  if (!username || !email || !password) {
-    return res.status(400).json({
-      message: "Please provide username , email and password",
-    });
-  }
+  const { username, email, password } = parseRegistration(req.body);
 
   const isUserAlreadyExists = await userModel.findOne({
     $or: [{ username }, { email }],
@@ -34,13 +29,7 @@ async function registerUserController(req, res) {
     password: hash,
   });
 
-  const token = jwt.sign(
-    { id: user._id, username: user.username },
-    process.env.JWT_SECRET,
-    { expiresIn: "1d" },
-  );
-
-  res.cookie("token", token);
+  res.cookie("token", createAccessToken(user), getAuthCookieOptions());
 
   res.status(201).json({
     message: "User registered successfully",
@@ -59,7 +48,7 @@ async function registerUserController(req, res) {
  */
 
 async function loginUserController(req, res) {
-  const { email, password } = req.body;
+  const { email, password } = parseCredentials(req.body);
 
   const user = await userModel.findOne({ email });
 
@@ -77,13 +66,7 @@ async function loginUserController(req, res) {
     });
   }
 
-  const token = jwt.sign(
-    { id: user._id, username: user.username },
-    process.env.JWT_SECRET,
-    { expiresIn: "1d" },
-  );
-
-  res.cookie("token", token);
+  res.cookie("token", createAccessToken(user), getAuthCookieOptions());
   res.status(200).json({
     message: "User loggedIn Successfully",
     user: {
@@ -107,7 +90,7 @@ async function logoutUserController(req, res) {
     // add token into blacklist
     await tokenBlacklistModel.create({ token });
   }
-  res.clearCookie("token");
+  res.clearCookie("token", getAuthCookieOptions());
 
   res.status(200).json({
     message: "User logout sucessfully",

@@ -19,6 +19,14 @@
         display:flex;
         flex-direction:column;
         gap:0.75rem;
+
+        .primary-button{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            min-height:40px;
+            margin-top:1.5rem;
+        }
     }
 
     .input-group{
@@ -36,6 +44,8 @@
         }
        
     }
+    .form-error { margin: 0; color: #ff8fae; font-size: 0.85rem; }
+    button:disabled { cursor: not-allowed; opacity: 0.6; }
      a{
             color: #e8268a;
             text-decoration: none;

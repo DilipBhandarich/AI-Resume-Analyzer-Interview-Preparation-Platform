@@ -1,7 +1,7 @@
-const jwt = require("jsonwebtoken");
 const tokenBlackModel = require("../models/blacklist.model");
+const { verifyAccessToken } = require("../config/security");
 async function authUser(req, res, next) {
-  const token = req.cookies.token;
+  const token = req.cookies.token || req.get("authorization")?.replace(/^Bearer\s+/i, "");
 
   if (!token) {
     return res.status(401).json({
@@ -9,22 +9,17 @@ async function authUser(req, res, next) {
     });
   }
 
-  const tokenInBlacklisted = await tokenBlackModel.findOne({ token });
-
-  if (tokenInBlacklisted) {
-    return res.status(401).json({
-      message: "Token is invalid",
-    });
-  }
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const tokenInBlacklisted = await tokenBlackModel.findOne({ token }).lean();
+    if (tokenInBlacklisted) {
+      return res.status(401).json({ message: "Authentication failed" });
+    }
+    const decoded = verifyAccessToken(token);
 
     req.user = decoded;
     next();
   } catch (err) {
-    return res.status(401).json({
-      message: "Invalid token",
-    });
+    return res.status(401).json({ message: "Authentication failed" });
   }
 }
 

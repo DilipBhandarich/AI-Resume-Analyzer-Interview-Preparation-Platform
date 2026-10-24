@@ -1,9 +1,9 @@
 const { GoogleGenAI } = require("@google/genai");
 const puppeteer = require("puppeteer");
 const { z } = require("zod");
-const ai = new GoogleGenAI({
-  apiKey: process.env.GOOGLE_GENAI_API_KEY,
-});
+const ai = process.env.GOOGLE_GENAI_API_KEY
+  ? new GoogleGenAI({ apiKey: process.env.GOOGLE_GENAI_API_KEY })
+  : null;
 
 const interviewReportSchema = z.object({
   matchScore: z
@@ -86,6 +86,7 @@ async function generateInterviweReport({
   selfDescription,
   jobDescription,
 }) {
+  if (!ai) throw new Error("GOOGLE_GENAI_API_KEY is not configured");
   const prompt = `Generate an interview report for the candidate using the required JSON schema and the following information:
     Resume: ${resume}
     Self Description: ${selfDescription}
@@ -121,6 +122,7 @@ async function generateResumePdf({
   selfDescription,
   jobDescription,
 }) {
+  if (!ai) throw new Error("GOOGLE_GENAI_API_KEY is not configured");
   const resumePdfSchema = z.object({
     html: z
       .string()

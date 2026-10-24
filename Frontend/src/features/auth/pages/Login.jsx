@@ -3,14 +3,14 @@ import "../auth.form.scss";
 import { useNavigate, Link } from "react-router";
 import { useAuth } from "../hooks/useAuth";
 const Login = () => {
-  const { loading, handleLogin } = useAuth();
+  const { loading, error, handleLogin } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const handleSubmit = async (event) => {
     event.preventDefault();
-    await handleLogin({ email, password });
-    navigate("/");
+    const loggedIn = await handleLogin({ email, password });
+    if (loggedIn) navigate("/");
   };
 
   if (loading) {
@@ -52,7 +52,8 @@ const Login = () => {
             ></input>
           </div>
 
-          <button type="submit" className="button primary-button">
+          {error && <p className="form-error" role="alert">{error}</p>}
+          <button type="submit" className="button primary-button" disabled={loading}>
             Login
           </button>
         </form>

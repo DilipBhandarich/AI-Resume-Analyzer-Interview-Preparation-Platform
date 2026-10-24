@@ -59,6 +59,7 @@ const Home = () => {
 
   const handleGenerateReport = async () => {
     const resumeFile = resumeInputRef.current.files[0];
+    if (!jobDescription.trim() || (!resumeFile && !selfDescription.trim())) return;
     const data = await generateReport({
       jobDescription,
       selfDescription,
@@ -151,7 +152,7 @@ const Home = () => {
                     type="file"
                     name="resume"
                     id="resume"
-                    accept=".pdf,.docx"
+                    accept=".pdf"
                   />
                 </div>
 

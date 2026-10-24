@@ -3,21 +3,24 @@ const mongoose = require("mongoose");
 const userSchema = mongoose.Schema({
   username: {
     type: String,
-    unique: [true, "Username already taken"],
+    unique: true,
     required: true,
+    trim: true,
   },
 
   email: {
     type: String,
-    unique: [true, "Account already exists"],
+    unique: true,
     required: true,
+    lowercase: true,
+    trim: true,
   },
 
   password: {
     type: String,
     required: true,
   },
-});
+}, { timestamps: true });
 
 const userModel = mongoose.model("user", userSchema);
 

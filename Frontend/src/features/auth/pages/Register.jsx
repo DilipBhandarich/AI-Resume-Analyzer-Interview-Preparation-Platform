@@ -3,15 +3,15 @@ import "../auth.form.scss";
 import { useNavigate, Link } from "react-router";
 import { useAuth } from "../hooks/useAuth";
 const Register = () => {
-  const { loading, handleRegister } = useAuth();
+  const { loading, error, handleRegister } = useAuth();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await handleRegister({ username, email, password });
-    navigate("/");
+    const registered = await handleRegister({ username, email, password });
+    if (registered) navigate("/");
   };
   return (
     <main className="auth-page">
@@ -58,7 +58,8 @@ const Register = () => {
             ></input>
           </div>
 
-          <button type="submit" className="button primary-button">
+          {error && <p className="form-error" role="alert">{error}</p>}
+          <button type="submit" className="button primary-button" disabled={loading}>
             Register
           </button>
         </form>

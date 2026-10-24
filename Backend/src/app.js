@@ -17,4 +17,15 @@ const interviewRouter = require("./routes/interview.routes");
 app.use("/api/auth", authRouter);
 app.use("/api/interview", interviewRouter);
 
+app.use((err, _req, res, _next) => {
+  if (err?.name === "ZodError") {
+    return res.status(400).json({ message: "Invalid request data", issues: err.issues });
+  }
+  if (err?.message === "Only PDF resumes are supported" || err?.code === "LIMIT_FILE_SIZE") {
+    return res.status(400).json({ message: err.message || "Uploaded file is too large" });
+  }
+  console.error(err);
+  return res.status(500).json({ message: "Internal server error" });
+});
+
 module.exports = app;

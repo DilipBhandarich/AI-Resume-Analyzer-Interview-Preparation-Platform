@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { AuthContext } from "../auth.context";
 import { login, register, logout, getMe } from "../services/auth.api";
 export const useAuth = () => {
@@ -6,30 +6,36 @@ export const useAuth = () => {
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
-  const { user, setUser, loading, setLoading } = context;
+  const { user, setUser, loading, setLoading, error, setError } = context;
 
   const handleLogin = async ({ email, password }) => {
     setLoading(true);
+    setError("");
     try {
       const data = await login({ email, password });
       setUser(data.user);
+      return true;
     } catch (err) {
-      console.log(err);
+      setError(err.response?.data?.message || "Unable to sign in. Check your details and try again.");
     } finally {
       setLoading(false);
     }
+    return false;
   };
 
   const handleRegister = async ({ username, email, password }) => {
     setLoading(true);
+    setError("");
     try {
       const data = await register({ username, email, password });
       setUser(data.user);
+      return true;
     } catch (err) {
-      console.log(err);
+      setError(err.response?.data?.message || "Unable to create your account. Check your details and try again.");
     } finally {
       setLoading(false);
     }
+    return false;
   };
 
   const handleLogout = async () => {
@@ -38,25 +44,10 @@ export const useAuth = () => {
       const data = await logout();
       setUser(null);
     } catch (err) {
-      console.log(err);
+      setError("Unable to sign out. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    const getAndSetUser = async () => {
-      try {
-        const data = await getMe();
-        setUser(data.user);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getAndSetUser();
-  }, []);
-
-  return { user, loading, handleLogin, handleRegister, handleLogout };
+  return { user, loading, error, handleLogin, handleRegister, handleLogout };
 };
