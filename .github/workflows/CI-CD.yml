@@ -21,7 +21,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
 
-      # Install frontend dependencies
+      # Frontend
       - name: Install Frontend dependencies
         working-directory: Frontend
         run: npm ci
@@ -30,10 +30,14 @@ jobs:
         working-directory: Frontend
         run: npm run build --if-present
 
-      # Install backend dependencies
+      # Backend
       - name: Install Backend dependencies
         working-directory: Backend
         run: npm ci
+
+      - name: Build Backend
+        working-directory: Backend
+        run: npm run build --if-present
 
       - name: Run Backend tests
         working-directory: Backend
