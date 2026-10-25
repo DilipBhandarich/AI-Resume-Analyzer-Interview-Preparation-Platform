@@ -2,43 +2,68 @@ name: Node.js CI
 
 on:
   push:
-    branches: ["main"]
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
-    runs-on: self-hosted
-
-    strategy:
-      matrix:
-        node-version: [22.x]
-
+  frontend:
+    name: Frontend build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: Frontend
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: "npm"
+          node-version: 22.x
+          cache: npm
+          cache-dependency-path: Frontend/package-lock.json
 
-      # Frontend
-      - name: Install Frontend dependencies
-        working-directory: Frontend
+      - name: Install dependencies
         run: npm ci
 
-      - name: Build Frontend
-        working-directory: Frontend
-        run: npm run build --if-present
+      - name: Build frontend
+        run: npm run build
 
-      # Backend
-      - name: Install Backend dependencies
+  backend:
+    name: Backend tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
         working-directory: Backend
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+          cache-dependency-path: Backend/package-lock.json
+
+      - name: Install dependencies
         run: npm ci
 
-      - name: Build Backend
-        working-directory: Backend
-        run: npm run build --if-present
-
-      - name: Run Backend tests
-        working-directory: Backend
+      - name: Run backend tests
         run: npm test
+        env:
+          JWT_SECRET: ci-only-secret-with-at-least-32-characters
+
+      - name: Check dependency vulnerabilities
+        run: npm audit --audit-level=high

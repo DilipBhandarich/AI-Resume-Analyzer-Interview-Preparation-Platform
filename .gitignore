@@ -10,6 +10,8 @@ node_modules/
 dist/
 build/
 coverage/
+.vite/
+.cache/
 
 # Logs and runtime files
 *.log
@@ -26,3 +28,8 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# Test and tool output
+.nyc_output/
+playwright-report/
+test-results/
