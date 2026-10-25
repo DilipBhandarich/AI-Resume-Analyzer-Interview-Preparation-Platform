@@ -6,7 +6,10 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "http://ec2-54-160-155-15.compute-1.amazonaws.com",
+    ],
     credentials: true,
   }),
 );
