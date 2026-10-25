@@ -66,4 +66,4 @@ jobs:
       - name: Check dependency vulnerabilities
         run: npm audit --audit-level=high
       - name: Restart backend server
-        run: sudo pm2 restart server.js
+        run: sudo pm2 restart backend
