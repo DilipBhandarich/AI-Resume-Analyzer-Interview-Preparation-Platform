@@ -7,7 +7,7 @@ $pink: #f00073;
 $purple: #b878ef;
 
 .interview {
-  min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: clip;
   scroll-padding-top: 88px;
   background:
@@ -556,6 +556,10 @@ $purple: #b878ef;
     padding-top: 68px;
   }
 
+  .interview__main-content {
+    padding-inline: clamp(24px, 4vw, 38px);
+  }
+
   .interview__insights {
     position: static;
     display: grid;
@@ -583,6 +587,16 @@ $purple: #b878ef;
 
     &__topbar-actions {
       gap: 0;
+    }
+
+    &__brand {
+      min-width: 0;
+
+      > span:last-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
     }
 
     &__status {
@@ -679,5 +693,54 @@ $purple: #b878ef;
     h3 {
       font-size: 0.78rem;
     }
+  }
+}
+
+@media (max-width: 430px) {
+  .interview {
+    &__topbar {
+      padding-inline: 12px;
+    }
+
+    &__brand {
+      gap: 7px;
+      font-size: 0.88rem;
+    }
+
+    &__brand-mark {
+      width: 27px;
+      height: 27px;
+    }
+
+    &__back-link {
+      font-size: 0.65rem;
+    }
+
+    &__sidebar {
+      padding-inline: 12px;
+    }
+
+    &__main-content {
+      padding-inline: 12px;
+    }
+
+    &__insights {
+      padding-inline: 12px;
+    }
+  }
+
+  .question-card {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .question-card__number {
+    width: 26px;
+    height: 26px;
+  }
+
+  .roadmap__item {
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
 }

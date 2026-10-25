@@ -7,7 +7,7 @@ $pink: #f00073;
 
 .loading-screen {
   display: flex;
-  min-height: 100vh;
+  min-height: 100dvh;
   align-items: center;
   justify-content: center;
   flex-direction: column;
@@ -54,7 +54,7 @@ $pink: #f00073;
     radial-gradient(circle at 50% 5%, rgba(43, 26, 57, 0.25), transparent 37rem),
     $page-bg;
   color: #f6f7f9;
-  overflow: hidden;
+  overflow-x: hidden;
 
   &__content {
     width: min(100%, 1000px);
@@ -729,6 +729,19 @@ $pink: #f00073;
 }
 
 @media (max-width: 430px) {
+  .home {
+    padding-inline: 12px;
+  }
+
+  .left,
+  .right {
+    padding-inline: 16px;
+  }
+
+  .interview-card__footer {
+    padding-inline: 16px;
+  }
+
   .home__header-break {
     display: none;
   }

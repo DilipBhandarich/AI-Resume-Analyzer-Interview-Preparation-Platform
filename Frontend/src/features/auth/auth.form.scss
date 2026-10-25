@@ -1,14 +1,15 @@
 
 .auth-page {
-    height:100vh;
+    min-height:100dvh;
     width:100%;
+    padding: 24px 16px;
 
     display:flex;
     justify-content:center;
     align-items:center;
 
     .form-container{
-        min-width:350px;
+        width: min(100%, 400px);
 
         display:flex;
         flex-direction:column;
@@ -35,7 +36,7 @@
         gap:0.5rem;
 
         input{
-            
+            width: 100%;
             border:none;
             outline:none;
             padding-inline: 1rem;
@@ -50,4 +51,10 @@
             color: #e8268a;
             text-decoration: none;
         }
+}
+
+@media (max-width: 420px) {
+    .auth-page {
+        padding: 20px 14px;
+    }
 }
