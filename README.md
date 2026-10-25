@@ -20,7 +20,7 @@ A full-stack application that compares a candidate's resume with a target job de
 
 Copy `Backend/.env.example` to `Backend/.env` and fill in the values locally. Never commit `.env` files or real credentials.
 
-The frontend reads `VITE_API_URL` at build time. It defaults to `http://localhost:3000`.
+The frontend reads `VITE_API_URL` at build time. It defaults to `http://localhost:8080`.
 
 ## Local development
 
@@ -45,7 +45,7 @@ cd Frontend
 npm run dev
 ```
 
-The frontend is served at `http://localhost:5173` and the backend at `http://localhost:3000`.
+The frontend is served at `http://localhost:5173` and the backend at `http://localhost:8080`.
 
 ## Validation
 
