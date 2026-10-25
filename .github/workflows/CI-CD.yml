@@ -39,21 +39,20 @@ jobs:
 
   backend:
     name: Backend tests
+    needs: frontend
     runs-on: self-hosted
     timeout-minutes: 10
     defaults:
       run:
         working-directory: Backend
     steps:
-      - name: Backup .env
-        run: |
-          if [ -f .env ]; then mv .env /tmp/env_backup; fi
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Restore .env
+      - name: Link backend environment
         run: |
-          if [ -f /tmp/env_backup ]; then mv /tmp/env_backup .env; fi
+          test -f /home/ubuntu/app-config/backend.env
+          ln -sfn /home/ubuntu/app-config/backend.env "$GITHUB_WORKSPACE/Backend/.env"
           
       - name: Set up Node.js
         uses: actions/setup-node@v4
