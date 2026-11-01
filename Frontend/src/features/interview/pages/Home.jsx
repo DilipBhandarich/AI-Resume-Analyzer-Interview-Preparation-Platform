@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import "../style/home.scss";
 import { useInterview } from "../hooks/useinterview";
 import { useNavigate } from "react-router";
+import LogoutButton from "../../auth/components/LogoutButton";
 const BriefcaseIcon = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true">
     <path d="M9 5.5A2.5 2.5 0 0 1 11.5 3h1A2.5 2.5 0 0 1 15 5.5V7h3.5A2.5 2.5 0 0 1 21 9.5v7a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 16.5v-7A2.5 2.5 0 0 1 5.5 7H9V5.5Zm2 0V7h2V5.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5ZM5.5 9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.5-.5H5.5Z" />
@@ -85,6 +86,9 @@ const Home = () => {
     <main className="home">
       <div className="home__content">
         <header className="home__header">
+          <div className="home__header-actions">
+            <LogoutButton />
+          </div>
           <h1>
             Create Your Custom <span>Interview Plan</span>
           </h1>

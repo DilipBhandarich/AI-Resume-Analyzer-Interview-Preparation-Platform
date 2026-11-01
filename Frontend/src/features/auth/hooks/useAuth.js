@@ -40,11 +40,14 @@ export const useAuth = () => {
 
   const handleLogout = async () => {
     setLoading(true);
+    setError("");
     try {
-      const data = await logout();
+      await logout();
       setUser(null);
-    } catch (err) {
+      return true;
+    } catch {
       setError("Unable to sign out. Please try again.");
+      return false;
     } finally {
       setLoading(false);
     }

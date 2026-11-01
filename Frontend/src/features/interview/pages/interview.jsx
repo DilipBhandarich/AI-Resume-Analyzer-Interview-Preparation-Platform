@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../style/interview.scss";
 import { useInterview } from "../hooks/useinterview";
 import { useNavigate, useParams } from "react-router";
+import LogoutButton from "../../auth/components/LogoutButton";
 const Icon = ({ children }) => (
   <svg viewBox="0 0 24 24" aria-hidden="true">
     <path d={children} />
@@ -148,6 +149,7 @@ const Interview = () => {
             <Icon>m9 19-7-7 7-7 1.4 1.4L5.8 11H21v2H5.8l4.6 4.6L9 19Z</Icon>
             New plan
           </a>
+          <LogoutButton />
         </div>
       </header>
 

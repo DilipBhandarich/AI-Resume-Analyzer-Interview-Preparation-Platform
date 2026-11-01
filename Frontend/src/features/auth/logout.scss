@@ -1,0 +1,39 @@
+.logout-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logout-button {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid #3a424c;
+  border-radius: 8px;
+  background: #171c22;
+  color: #e7eaf0;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease;
+
+  &:hover:not(:disabled) {
+    border-color: #f00073;
+    background: #211820;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #f00073;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.7;
+  }
+}
+
+.logout-error {
+  color: #ff8da8;
+  font-size: 0.72rem;
+}
