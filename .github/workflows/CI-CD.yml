@@ -37,16 +37,17 @@ jobs:
       - name: Install and test backend
         working-directory: Backend
         run: |
-          npm ci
+          npm ci --no-audit --no-fund --maxsockets=1
           npm test
           npm audit --audit-level=high
         env:
           JWT_SECRET: ci-only-secret-with-at-least-32-characters
+          PUPPETEER_SKIP_DOWNLOAD: "true"
 
       - name: Build frontend
         working-directory: Frontend
         run: |
-          npm ci
+          npm ci --no-audit --no-fund --maxsockets=1
           npm run build
 
       - name: Deploy application to EC2
@@ -58,7 +59,7 @@ jobs:
           sudo rsync -a --delete --exclude='.env' --exclude='node_modules/' --exclude='uploads/' Backend/ "$APP_DIR/Backend/"
           sudo rsync -a --delete Frontend/dist/ "$WEB_ROOT/"
           sudo ln -sfn /home/ubuntu/app-config/backend.env "$APP_DIR/Backend/.env"
-          sudo npm ci --omit=dev --prefix "$APP_DIR/Backend"
+          sudo npm ci --omit=dev --no-audit --no-fund --maxsockets=1 --prefix "$APP_DIR/Backend"
           sudo chown -R ubuntu:ubuntu "$APP_DIR"
           sudo install -m 0644 deploy/nginx.conf "$NGX_SITE"
           sudo ln -sfn "$NGX_SITE" /etc/nginx/sites-enabled/ai-resume-analyzer
