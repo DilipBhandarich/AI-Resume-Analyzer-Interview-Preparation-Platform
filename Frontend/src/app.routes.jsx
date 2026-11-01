@@ -4,6 +4,7 @@ import Register from "./features/auth/pages/Register";
 import Protected from "./features/auth/components/protected";
 import Home from "./features/interview/pages/Home";
 import Interview from "./features/interview/pages/interview";
+import Landing from "./features/landing/pages/Landing";
 
 export const router = createBrowserRouter([
   {
@@ -16,6 +17,10 @@ export const router = createBrowserRouter([
   },
   {
     path: "/",
+    element: <Landing />,
+  },
+  {
+    path: "/workspace",
     element: (
       <Protected>
         <Home />

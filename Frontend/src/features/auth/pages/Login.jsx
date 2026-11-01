@@ -10,7 +10,7 @@ const Login = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const loggedIn = await handleLogin({ email, password });
-    if (loggedIn) navigate("/");
+    if (loggedIn) navigate("/workspace");
   };
 
   if (loading) {

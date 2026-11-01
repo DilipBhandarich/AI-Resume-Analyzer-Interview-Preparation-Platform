@@ -11,7 +11,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const registered = await handleRegister({ username, email, password });
-    if (registered) navigate("/");
+    if (registered) navigate("/workspace");
   };
   return (
     <main className="auth-page">

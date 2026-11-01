@@ -296,6 +296,37 @@ $pink: #f00073;
   }
 }
 
+.resume-file {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  margin-top: 9px;
+  padding: 10px;
+  border: 1px solid rgba(111, 220, 174, 0.28);
+  border-radius: 8px;
+  background: rgba(65, 133, 105, 0.08);
+
+  &__icon {
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    width: 36px;
+    height: 40px;
+    border-radius: 6px;
+    color: #c8f4df;
+    background: rgba(81, 183, 135, 0.2);
+    font-size: 0.58rem;
+    font-weight: 800;
+  }
+
+  &__details { display: grid; flex: 1; min-width: 0; gap: 4px; }
+  &__details strong { overflow: hidden; color: #e5e9ed; font-size: 0.7rem; text-overflow: ellipsis; white-space: nowrap; }
+  &__details small { color: #8d9b98; font-size: 0.6rem; }
+  &__remove { flex: 0 0 auto; padding: 5px 7px; border: 0; border-radius: 5px; color: #ff8dbd; background: transparent; cursor: pointer; font-size: 0.63rem; }
+  &__remove:hover { background: rgba(240, 0, 115, 0.1); }
+}
+
 .upload-icon {
   display: grid;
   place-items: center;

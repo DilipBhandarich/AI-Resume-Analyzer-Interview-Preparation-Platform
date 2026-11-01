@@ -59,7 +59,6 @@ const Home = () => {
   const navigate = useNavigate();
 
   const handleGenerateReport = async () => {
-    const resumeFile = resumeInputRef.current.files[0];
     if (!jobDescription.trim() || (!resumeFile && !selfDescription.trim())) return;
     const data = await generateReport({
       jobDescription,
@@ -148,15 +147,36 @@ const Home = () => {
                       <UploadIcon />
                     </span>
                     <strong>Click to upload or drag &amp; drop</strong>
-                    <small>PDF or DOCX (Max 5MB)</small>
+                    <small>PDF only (Max 3MB)</small>
                   </label>
+                  {resumeFile && (
+                    <div className="resume-file" role="status" aria-live="polite">
+                      <span className="resume-file__icon" aria-hidden="true">PDF</span>
+                      <span className="resume-file__details">
+                        <strong title={resumeFile.name}>{resumeFile.name}</strong>
+                        <small>{(resumeFile.size / (1024 * 1024)).toFixed(2)} MB · Ready to upload</small>
+                      </span>
+                      <button
+                        className="resume-file__remove"
+                        type="button"
+                        onClick={() => {
+                          setResumeFile(null);
+                          if (resumeInputRef.current) resumeInputRef.current.value = "";
+                        }}
+                        aria-label={`Remove ${resumeFile.name}`}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
                   <input
                     ref={resumeInputRef}
                     hidden
                     type="file"
                     name="resume"
                     id="resume"
-                    accept=".pdf"
+                    accept="application/pdf,.pdf"
+                    onChange={(event) => setResumeFile(event.target.files?.[0] ?? null)}
                   />
                 </div>
 
