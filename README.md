@@ -1,5 +1,15 @@
 # AI Resume Analyzer Interview Preparation Platform
 
+## Recruiter demo
+
+Use this shared account to try the live website:
+
+- **Website:** <http://ec2-54-160-155-15.compute-1.amazonaws.com/login>
+- **Email:** `recruiter.demo@resumeai.app`
+- **Password:** `ResumeAI-Demo-2026!`
+
+This is a public demo account. Please do not enter personal or sensitive information.
+
 A full-stack application that compares a candidate's resume with a target job description and generates a tailored interview-preparation plan.
 
 ## Stack
@@ -18,7 +28,7 @@ A full-stack application that compares a candidate's resume with a target job de
 
 ## Configuration
 
-Copy `Backend/.env.example` to `Backend/.env` and fill in the values locally. Never commit `.env` files or real credentials.
+Copy `Backend/.env.example` to `Backend/.env` and fill in the values locally. Never commit `.env` files, private credentials, or secrets. The recruiter demo credentials above are intentionally public for the shared demo account.
 
 The frontend reads `VITE_API_URL` at build time. It defaults to the EC2 site URL. In production, nginx serves the frontend and forwards `/api/*` requests to Express on port 8080.
 
@@ -67,7 +77,7 @@ There is currently no lint or formatting script configured. The GitHub Actions w
 
 ## CI/CD
 
-The workflow is [`.github/workflows/CI-CD.yml`](.github/workflows/CI-CD.yml). It builds the frontend, runs backend tests and the dependency audit on a self-hosted Ubuntu runner, and deploys from `main`. The runner is expected to run on the EC2 instance as a user with passwordless `sudo` for the deployment commands. The backend environment file must exist at `/home/ubuntu/app-config/backend.env`.
+The workflow is [`.github/workflows/CI-CD.yml`](.github/workflows/CI-CD.yml). It runs backend tests and the dependency audit, then builds the frontend on a GitHub-hosted Ubuntu runner. For pushes to `main`, it sends the build to the self-hosted EC2 runner for deployment. The EC2 runner is expected to run as a user with passwordless `sudo` for the deployment commands. The backend environment file must exist at `/home/ubuntu/app-config/backend.env`.
 
 On deployment, the workflow installs the backend in `/home/ubuntu/app`, copies the frontend build to `/var/www/ai-resume-analyzer`, configures the nginx site from [`deploy/nginx.conf`](deploy/nginx.conf), and restarts the PM2 process named `backend`. Ensure the EC2 security group allows HTTP on port 80 and that nginx, Node.js 22, npm, PM2, and rsync are installed. The backend environment file stays outside the repository. The workflow does not deploy pushes to `develop`; those runs perform CI only.
 
