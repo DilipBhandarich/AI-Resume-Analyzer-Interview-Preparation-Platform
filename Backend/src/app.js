@@ -1,6 +1,8 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const fs = require("node:fs");
+const path = require("node:path");
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
@@ -19,6 +21,20 @@ const interviewRouter = require("./routes/interview.routes");
 // using all the routes here
 app.use("/api/auth", authRouter);
 app.use("/api/interview", interviewRouter);
+
+// Serve the Vite production build when the frontend has been built. The SPA
+// fallback is needed so routes such as /login work on a direct page refresh.
+const frontendDist = path.resolve(__dirname, "../../Frontend/dist");
+const frontendIndex = path.join(frontendDist, "index.html");
+if (fs.existsSync(frontendIndex)) {
+  app.use(express.static(frontendDist));
+  app.get("/{*path}", (req, res, next) => {
+    if (req.path.startsWith("/api/")) return next();
+    return res.sendFile(frontendIndex, (error) => {
+      if (error) next(error);
+    });
+  });
+}
 
 app.use((err, _req, res, _next) => {
   if (err?.name === "ZodError") {

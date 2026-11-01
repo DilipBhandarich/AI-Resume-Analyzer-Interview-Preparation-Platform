@@ -1,4 +1,4 @@
-name: Node.js CI
+name: CI and deploy
 
 on:
   push:
@@ -9,17 +9,18 @@ permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: deploy-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  frontend:
-    name: Frontend build
+  build-test-deploy:
+    name: Build, test, and deploy
     runs-on: self-hosted
-    timeout-minutes: 10
-    defaults:
-      run:
-        working-directory: Frontend
+    timeout-minutes: 20
+    env:
+      APP_DIR: /home/ubuntu/app
+      WEB_ROOT: /var/www/ai-resume-analyzer
+      NGX_SITE: /etc/nginx/sites-available/ai-resume-analyzer
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -29,47 +30,40 @@ jobs:
         with:
           node-version: 22.x
           cache: npm
-          cache-dependency-path: Frontend/package-lock.json
+          cache-dependency-path: |
+            Backend/package-lock.json
+            Frontend/package-lock.json
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build frontend
-        run: npm run build
-
-  backend:
-    name: Backend tests
-    needs: frontend
-    runs-on: self-hosted
-    timeout-minutes: 10
-    defaults:
-      run:
+      - name: Install and test backend
         working-directory: Backend
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Link backend environment
         run: |
-          test -f /home/ubuntu/app-config/backend.env
-          ln -sfn /home/ubuntu/app-config/backend.env "$GITHUB_WORKSPACE/Backend/.env"
-          
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-          cache: npm
-          cache-dependency-path: Backend/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run backend tests
-        run: npm test
+          npm ci
+          npm test
+          npm audit --audit-level=high
         env:
           JWT_SECRET: ci-only-secret-with-at-least-32-characters
 
-      - name: Check dependency vulnerabilities
-        run: npm audit --audit-level=high
-      - name: Restart backend server
-        run: sudo pm2 restart backend
+      - name: Build frontend
+        working-directory: Frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Deploy application to EC2
+        if: github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          test -f /home/ubuntu/app-config/backend.env
+          sudo mkdir -p "$APP_DIR/Backend" "$WEB_ROOT"
+          sudo rsync -a --delete --exclude='.env' --exclude='node_modules/' --exclude='uploads/' Backend/ "$APP_DIR/Backend/"
+          sudo rsync -a --delete Frontend/dist/ "$WEB_ROOT/"
+          sudo ln -sfn /home/ubuntu/app-config/backend.env "$APP_DIR/Backend/.env"
+          sudo npm ci --omit=dev --prefix "$APP_DIR/Backend"
+          sudo chown -R ubuntu:ubuntu "$APP_DIR"
+          sudo install -m 0644 deploy/nginx.conf "$NGX_SITE"
+          sudo ln -sfn "$NGX_SITE" /etc/nginx/sites-enabled/ai-resume-analyzer
+          sudo nginx -t
+          sudo systemctl reload nginx
+          sudo pm2 delete backend || true
+          sudo pm2 start "$APP_DIR/Backend/server.js" --name backend --cwd "$APP_DIR/Backend"
+          sudo pm2 save
