@@ -13,14 +13,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-test-deploy:
-    name: Build, test, and deploy
-    runs-on: self-hosted
+  test-and-build:
+    name: Test and build
+    runs-on: ubuntu-latest
     timeout-minutes: 20
-    env:
-      APP_DIR: /home/ubuntu/app
-      WEB_ROOT: /var/www/ai-resume-analyzer
-      NGX_SITE: /etc/nginx/sites-available/ai-resume-analyzer
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -50,8 +46,34 @@ jobs:
           npm ci --no-audit --no-fund --maxsockets=1
           npm run build
 
+      - name: Save frontend build
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: Frontend/dist/
+          if-no-files-found: error
+
+  deploy:
+    name: Deploy to EC2
+    needs: test-and-build
+    if: github.ref == 'refs/heads/main'
+    runs-on: self-hosted
+    timeout-minutes: 20
+    env:
+      APP_DIR: /home/ubuntu/app
+      WEB_ROOT: /var/www/ai-resume-analyzer
+      NGX_SITE: /etc/nginx/sites-available/ai-resume-analyzer
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Get frontend build
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: Frontend/dist/
+
       - name: Deploy application to EC2
-        if: github.ref == 'refs/heads/main'
         run: |
           set -euo pipefail
           test -f /home/ubuntu/app-config/backend.env
