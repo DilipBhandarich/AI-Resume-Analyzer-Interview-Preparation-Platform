@@ -26,9 +26,16 @@ async function generateInterviewReportController(req, res) {
     });
   }
 
-  const resumeContent = await new pdfParse.PDFParse(
-    Uint8Array.from(req.file.buffer),
-  ).getText();
+  const parser = new pdfParse.PDFParse({
+    data: Uint8Array.from(req.file.buffer),
+  });
+
+  let resumeContent;
+  try {
+    resumeContent = await parser.getText();
+  } finally {
+    await parser.destroy();
+  }
 
   const interviewReportByAi = await generateInterviweReport({
     resume: resumeContent.text,
